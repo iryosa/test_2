@@ -12,7 +12,7 @@
             background-color: #f9f9f9;
         }
         .container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 20px auto;
             padding: 20px;
             background-color: #fff;
@@ -46,12 +46,49 @@
         .details div {
             margin: 10px 0;
         }
+        .input-container {
+            margin: 10px 0;
+        }
+        .input-container input {
+            width: 100px;
+            padding: 5px;
+            margin-left: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table th, table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        table th {
+            background-color: #007BFF;
+            color: white;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Data Evaluation Metrics</h1>
         <div id="content"></div>
+        <h2>Statistics</h2>
+        <table id="stats-table">
+            <thead>
+                <tr>
+                    <th>Type</th>
+                    <th>Total Count</th>
+                    <th>Average</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Statistics will be dynamically added here -->
+            </tbody>
+        </table>
     </div>
 
     <script>
@@ -64,8 +101,7 @@
                         measures: [
                             { name: "Error indicator", description: "Excess item: Item isn’t correctly presented in the data" },
                             { name: "Error count", description: "Number of excess items: Number of items within the model or sample that should not have been presented" },
-                            { name: "Error rate", description: "Rate of excess items: Number of items within the model or sample in relation to the number of items that should have been presented" },
-                            { name: "Error count", description: "Number of duplicate items (including noise and modeling artifacts): Total number of exact duplications of items within the model or sample" }
+                            { name: "Error rate", description: "Rate of excess items: Number of items within the model or sample in relation to the number of items that should have been presented" }
                         ]
                     },
                     {
@@ -92,6 +128,7 @@
             }
         ];
 
+        const stats = {};
         const content = document.getElementById('content');
 
         data.forEach((entry) => {
@@ -113,7 +150,15 @@
                 
                 subtype.measures.forEach((measure) => {
                     const measureDiv = document.createElement('div');
-                    measureDiv.textContent = `${measure.name}: ${measure.description}`;
+                    measureDiv.innerHTML = `
+                        ${measure.name}: ${measure.description}
+                        <div class="input-container">
+                            <label for="${measure.name}">Enter value:</label>
+                            <input type="number" id="${measure.name}" data-type="${entry.type}" value="0" min="0">
+                        </div>
+                    `;
+                    const inputField = measureDiv.querySelector('input');
+                    inputField.addEventListener('input', updateStats);
                     subtypeDiv.appendChild(measureDiv);
                 });
                 
@@ -123,7 +168,31 @@
             typeDiv.appendChild(typeHeader);
             typeDiv.appendChild(detailsDiv);
             content.appendChild(typeDiv);
+            
+            stats[entry.type] = { total: 0, count: 0 };
         });
+
+        function updateStats(event) {
+            const type = event.target.dataset.type;
+            const value = parseFloat(event.target.value) || 0;
+            stats[type].total += value;
+            stats[type].count += 1;
+            updateStatsTable();
+        }
+
+        function updateStatsTable() {
+            const tableBody = document.querySelector('#stats-table tbody');
+            tableBody.innerHTML = '';
+            for (const [type, stat] of Object.entries(stats)) {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${type}</td>
+                    <td>${stat.total}</td>
+                    <td>${(stat.total / stat.count).toFixed(2)}</td>
+                `;
+                tableBody.appendChild(row);
+            }
+        }
     </script>
 </body>
 </html>
