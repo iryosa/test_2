@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Evaluation Metrics</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .type {
+            margin: 20px 0;
+        }
+        .type h2 {
+            cursor: pointer;
+            background-color: #007BFF;
+            color: #fff;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 0;
+        }
+        .type h2:hover {
+            background-color: #0056b3;
+        }
+        .details {
+            display: none;
+            margin: 10px 0;
+            padding-left: 20px;
+            border-left: 3px solid #007BFF;
+        }
+        .details div {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Data Evaluation Metrics</h1>
+        <div id="content"></div>
+    </div>
+
+    <script>
+        const data = [
+            {
+                type: "Completeness",
+                subtypes: [
+                    {
+                        name: "Commission",
+                        measures: [
+                            { name: "Error indicator", description: "Excess item: Item isn’t correctly presented in the data" },
+                            { name: "Error count", description: "Number of excess items: Number of items within the model or sample that should not have been presented" },
+                            { name: "Error rate", description: "Rate of excess items: Number of items within the model or sample in relation to the number of items that should have been presented" },
+                            { name: "Error count", description: "Number of duplicate items (including noise and modeling artifacts): Total number of exact duplications of items within the model or sample" }
+                        ]
+                    },
+                    {
+                        name: "Omissions",
+                        measures: [
+                            { name: "Error indicator", description: "Missing items: A specific item is missing in the model or sample" },
+                            { name: "Error count", description: "Number of missing items: Number of items that should have been presented in the model or sample and are missing" },
+                            { name: "Error rate", description: "Rate of missing items: Number of missing items in the model or sample in relation to the number of items that should have been presented" }
+                        ]
+                    }
+                ]
+            },
+            {
+                type: "Consistency",
+                subtypes: [
+                    {
+                        name: "Conceptual Schema",
+                        measures: [
+                            { name: "Error indicator", description: "Conceptual schema non-compliance: An item is not compliant with the definitions or rules of the relevant conceptual schema" },
+                            { name: "Correctness indicator", description: "Conceptual schema compliance: An item is compliant with the definitions or rules of the relevant conceptual schema" }
+                        ]
+                    }
+                ]
+            }
+        ];
+
+        const content = document.getElementById('content');
+
+        data.forEach((entry) => {
+            const typeDiv = document.createElement('div');
+            typeDiv.classList.add('type');
+            
+            const typeHeader = document.createElement('h2');
+            typeHeader.textContent = entry.type;
+            typeHeader.addEventListener('click', () => {
+                detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
+            });
+            
+            const detailsDiv = document.createElement('div');
+            detailsDiv.classList.add('details');
+            
+            entry.subtypes.forEach((subtype) => {
+                const subtypeDiv = document.createElement('div');
+                subtypeDiv.innerHTML = `<strong>${subtype.name}</strong>`;
+                
+                subtype.measures.forEach((measure) => {
+                    const measureDiv = document.createElement('div');
+                    measureDiv.textContent = `${measure.name}: ${measure.description}`;
+                    subtypeDiv.appendChild(measureDiv);
+                });
+                
+                detailsDiv.appendChild(subtypeDiv);
+            });
+
+            typeDiv.appendChild(typeHeader);
+            typeDiv.appendChild(detailsDiv);
+            content.appendChild(typeDiv);
+        });
+    </script>
+</body>
+</html>
